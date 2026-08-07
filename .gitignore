@@ -1,0 +1,10 @@
+bin/
+obj/
+.vs/
+.idea/
+*.user
+*.suo
+publish/
+artifacts/
+.DS_Store
+src/AINote/Assets/Tray*.ico
