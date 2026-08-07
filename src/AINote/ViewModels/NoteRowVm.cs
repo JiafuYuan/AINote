@@ -128,7 +128,17 @@ public sealed class NoteRowVm : ObservableObject
 
     public string DueDateText
     {
-        get => Model.DueDate?.ToString("yyyy-MM-dd") ?? "";
+        get
+        {
+            if (!Model.DueDate.HasValue)
+            {
+                return "";
+            }
+
+            return Model.DueDate.Value.TimeOfDay == TimeSpan.Zero
+                ? Model.DueDate.Value.ToString("yyyy-MM-dd")
+                : Model.DueDate.Value.ToString("yyyy-MM-dd HH:mm");
+        }
         set
         {
             if (string.IsNullOrWhiteSpace(value))
@@ -137,11 +147,24 @@ public sealed class NoteRowVm : ObservableObject
                 return;
             }
             if (DateTime.TryParse(value, out var date))
-                DueDate = date.Date;
+                DueDate = date;
         }
     }
 
-    public string DueText => Model.DueDate?.ToString("M月d日 ddd", CultureInfo.GetCultureInfo("zh-CN")) ?? "无日期";
+    public string DueText
+    {
+        get
+        {
+            if (!Model.DueDate.HasValue)
+            {
+                return "无日期";
+            }
+
+            var date = Model.DueDate.Value;
+            var text = date.ToString("M月d日 ddd", CultureInfo.GetCultureInfo("zh-CN"));
+            return date.TimeOfDay == TimeSpan.Zero ? text : $"{text} {date:HH:mm}";
+        }
+    }
     public string StarsText => Model.Stars > 0 ? new string('★', Model.Stars) : "无星级";
     public string MetaText => $"{Category} · {StarsText} · {DueText}";
     public string Preview => string.IsNullOrWhiteSpace(Model.Summary)

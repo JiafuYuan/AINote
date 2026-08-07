@@ -78,14 +78,31 @@ public partial class MainView : UserControl
             DetailPanel.IsVisible = true;
             MainListPanel.IsVisible = true;
         }
+
+        ToggleClass(AddDialog, "wide", !_vm.IsNarrow);
+        ToggleClass(AddNoteEditor, "wide", !_vm.IsNarrow);
     }
 
-    private void OnQuickInputKeyDown(object? sender, KeyEventArgs e)
+    private static void ToggleClass(StyledElement element, string className, bool enabled)
+    {
+        if (enabled)
+        {
+            if (!element.Classes.Contains(className))
+                element.Classes.Add(className);
+        }
+        else
+        {
+            element.Classes.Remove(className);
+        }
+    }
+
+    private void OnAddNoteKeyDown(object? sender, KeyEventArgs e)
     {
         if (e.Key != Key.Enter || _vm is null) return;
-        if (_vm.QuickAddCommand.CanExecute(null))
+        if (e.KeyModifiers.HasFlag(KeyModifiers.Shift)) return;
+        if (_vm.AddNoteCommand.CanExecute(null))
         {
-            _vm.QuickAddCommand.Execute(null);
+            _vm.AddNoteCommand.Execute(null);
             e.Handled = true;
         }
     }

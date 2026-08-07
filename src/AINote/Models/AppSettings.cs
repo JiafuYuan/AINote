@@ -8,4 +8,6 @@ public sealed class AppSettings
     public string ApiKey { get; set; } = "";
     public string Model { get; set; } = "gpt-4o-mini";
     public double Temperature { get; set; } = 0.2;
+    public bool SyncEnabled { get; set; }
+    public string SyncBaseUrl { get; set; } = "http://localhost:19001";
 }

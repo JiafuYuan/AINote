@@ -2,6 +2,7 @@ using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Windows.Input;
 using Avalonia;
+using Avalonia.Threading;
 using AINote.Models;
 using AINote.Services;
 
@@ -11,32 +12,48 @@ public sealed class MainWindowViewModel : ObservableObject
 {
     private readonly DataService _dataService = new();
     private readonly AiAnalyzer _aiAnalyzer = new();
+    private readonly AinoteSyncService _syncService = new();
     private readonly List<NoteItem> _notes;
     private readonly Dictionary<string, NoteRowVm> _rowMap = new();
     private AppSettings _settings;
     private string _selectedSidebarKey = "all";
     private NoteRowVm? _selectedNote;
-    private string _quickText = "";
+    private string _addNoteTitle = "";
+    private string _addNoteText = "";
     private string _searchText = "";
     private string _statusText = "就绪";
     private string _currentViewTitle = "全部";
     private bool _settingsOpen;
+    private bool _addNoteOpen;
+    private bool _addNoteAnalyzing;
     private bool _sidebarOpen;
     private bool _isNarrow;
     private bool _isAiAnalyzing;
     private bool _isTestingAi;
     private string _aiTestResult = "";
     private string _temperatureText;
+    private bool _isSyncing;
+    private string _syncStatusText = "未同步";
+    private string _toastText = "";
+    private bool _toastOpen;
+    private DispatcherTimer? _toastTimer;
 
     public MainWindowViewModel()
     {
+        _notes = _dataService.LoadNotes();
         _settings = _dataService.LoadSettings();
         _temperatureText = _settings.Temperature.ToString("0.##", CultureInfo.InvariantCulture);
-        _notes = _dataService.LoadNotes();
 
-        QuickAddCommand = new RelayCommand(() => _ = QuickAddAsync());
-        SaveNoteCommand = new RelayCommand(SaveSelected);
-        DeleteNoteCommand = new RelayCommand(DeleteSelected);
+        OpenAddNoteCommand = new RelayCommand(() =>
+        {
+            AddNoteTitle = "";
+            AddNoteText = "";
+            AddNoteOpen = true;
+        });
+        CloseAddNoteCommand = new RelayCommand(() => AddNoteOpen = false);
+        AddNoteCommand = new RelayCommand(() => _ = AddNoteAsync());
+        SaveNoteCommand = new RelayCommand(() => _ = SaveSelectedAsync());
+        DeleteNoteCommand = new RelayCommand(() => _ = DeleteSelectedAsync());
         AnalyzeNoteCommand = new RelayCommand(() => _ = AnalyzeSelectedAsync());
         ToggleSettingsCommand = new RelayCommand(() => SettingsOpen = !SettingsOpen);
         CloseSettingsCommand = new RelayCommand(() => SettingsOpen = false);
@@ -50,6 +67,8 @@ public sealed class MainWindowViewModel : ObservableObject
         SetDueTomorrowCommand = new RelayCommand(() => SetDueDate(DateTime.Today.AddDays(1)));
         ClearDueCommand = new RelayCommand(() => SetDueDate(null));
         ClearSearchCommand = new RelayCommand(() => SearchText = "");
+        CloseToastCommand = new RelayCommand(() => ToastOpen = false);
+        SyncNowCommand = new RelayCommand(() => _ = SyncNowAsync());
 
         foreach (var note in _notes)
         {
@@ -59,6 +78,9 @@ public sealed class MainWindowViewModel : ObservableObject
 
         RebuildSidebar();
         RefreshVisibleNotes();
+
+        if (_settings.SyncEnabled && !string.IsNullOrWhiteSpace(_settings.SyncBaseUrl))
+            _ = SyncNowAsync();
     }
 
     public ObservableCollection<NoteRowVm> VisibleNotes { get; } = new();
@@ -66,7 +88,9 @@ public sealed class MainWindowViewModel : ObservableObject
     public ObservableCollection<SidebarItemVm> CategorySidebarItems { get; } = new();
     public ObservableCollection<SidebarItemVm> TagSidebarItems { get; } = new();
 
-    public ICommand QuickAddCommand { get; }
+    public ICommand OpenAddNoteCommand { get; }
+    public ICommand CloseAddNoteCommand { get; }
+    public ICommand AddNoteCommand { get; }
     public ICommand SaveNoteCommand { get; }
     public ICommand DeleteNoteCommand { get; }
     public ICommand AnalyzeNoteCommand { get; }
@@ -82,11 +106,31 @@ public sealed class MainWindowViewModel : ObservableObject
     public ICommand SetDueTomorrowCommand { get; }
     public ICommand ClearDueCommand { get; }
     public ICommand ClearSearchCommand { get; }
+    public ICommand CloseToastCommand { get; }
+    public ICommand SyncNowCommand { get; }
 
-    public string QuickText
+    public string AddNoteText
     {
-        get => _quickText;
-        set => SetProperty(ref _quickText, value);
+        get => _addNoteText;
+        set => SetProperty(ref _addNoteText, value);
+    }
+
+    public string AddNoteTitle
+    {
+        get => _addNoteTitle;
+        set => SetProperty(ref _addNoteTitle, value);
+    }
+
+    public string ToastText
+    {
+        get => _toastText;
+        set => SetProperty(ref _toastText, value);
+    }
+
+    public bool ToastOpen
+    {
+        get => _toastOpen;
+        set => SetProperty(ref _toastOpen, value);
     }
 
     public string SearchText
@@ -134,6 +178,24 @@ public sealed class MainWindowViewModel : ObservableObject
     {
         get => _settingsOpen;
         set => SetProperty(ref _settingsOpen, value);
+    }
+
+    public bool AddNoteOpen
+    {
+        get => _addNoteOpen;
+        set
+        {
+            if (SetProperty(ref _addNoteOpen, value))
+                OnPropertyChanged(nameof(IsAddNoteClosed));
+        }
+    }
+
+    public bool IsAddNoteClosed => !AddNoteOpen;
+
+    public bool AddNoteAnalyzing
+    {
+        get => _addNoteAnalyzing;
+        set => SetProperty(ref _addNoteAnalyzing, value);
     }
 
     public bool SidebarOpen
@@ -240,6 +302,42 @@ public sealed class MainWindowViewModel : ObservableObject
         }
     }
 
+    public bool SyncEnabled
+    {
+        get => _settings.SyncEnabled;
+        set
+        {
+            if (_settings.SyncEnabled == value) return;
+            _settings.SyncEnabled = value;
+            OnPropertyChanged();
+            SaveSettings();
+        }
+    }
+
+    public string SyncBaseUrl
+    {
+        get => _settings.SyncBaseUrl;
+        set
+        {
+            if (_settings.SyncBaseUrl == value) return;
+            _settings.SyncBaseUrl = value;
+            OnPropertyChanged();
+            SaveSettings();
+        }
+    }
+
+    public bool IsSyncing
+    {
+        get => _isSyncing;
+        set => SetProperty(ref _isSyncing, value);
+    }
+
+    public string SyncStatusText
+    {
+        get => _syncStatusText;
+        set => SetProperty(ref _syncStatusText, value);
+    }
+
     public void SetLayoutWidth(double width)
     {
         var narrow = width < 760;
@@ -247,14 +345,62 @@ public sealed class MainWindowViewModel : ObservableObject
         if (!narrow) SidebarOpen = false;
     }
 
-    private async Task QuickAddAsync()
+    public void ShowToast(string text)
     {
-        var text = QuickText?.Trim() ?? "";
-        if (string.IsNullOrWhiteSpace(text)) return;
+        ToastText = text;
+        ToastOpen = true;
+        _toastTimer?.Stop();
+        _toastTimer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(3.2) };
+        _toastTimer.Tick += (_, _) =>
+        {
+            _toastTimer?.Stop();
+            ToastOpen = false;
+        };
+        _toastTimer.Start();
+    }
+
+    private async Task AddNoteAsync()
+    {
+        if (AddNoteAnalyzing) return;
+
+        AddNoteAnalyzing = true;
+        try
+        {
+            var row = AddNoteFromText(AddNoteTitle, AddNoteText);
+            if (row is null) return;
+
+            AddNoteTitle = "";
+            AddNoteText = "";
+            AddNoteOpen = false;
+            SelectedNote = row;
+            if (_settings.AiAutoAnalyze)
+            {
+                await AnalyzeAndApplyAsync(row);
+            }
+            else if (SyncEnabled)
+            {
+                await TryUpsertAsync(row.Model);
+            }
+            ShowToast("已保存笔记");
+        }
+        finally
+        {
+            AddNoteAnalyzing = false;
+        }
+    }
+
+    private NoteRowVm? AddNoteFromText(string? rawTitle, string? rawText)
+    {
+        var text = rawText?.Trim() ?? "";
+        if (string.IsNullOrWhiteSpace(text)) return null;
+
+        var title = rawTitle?.Trim() ?? "";
+        if (string.IsNullOrWhiteSpace(title))
+            title = text.Length <= 80 ? text : text[..80].TrimEnd() + "…";
 
         var note = new NoteItem
         {
-            Title = text.Length <= 80 ? text : text[..80].TrimEnd() + "…",
+            Title = title,
             Content = text,
             CreatedAt = DateTime.Now,
             UpdatedAt = DateTime.Now,
@@ -265,35 +411,43 @@ public sealed class MainWindowViewModel : ObservableObject
         SaveNotes();
         RefreshVisibleNotes();
         RebuildSidebar();
-        QuickText = "";
-        SelectedNote = row;
-
-        if (_settings.AiAutoAnalyze)
-            await AnalyzeAndApplyAsync(row);
-        else
-            StatusText = "已添加笔记";
+        return row;
     }
 
     private async Task AnalyzeAndApplyAsync(NoteRowVm row)
     {
         IsAiAnalyzing = true;
-        StatusText = "AI 正在分析…";
+        StatusText = SyncEnabled ? "后台 AI 正在分析…" : "正在按本地规则整理…";
         try
         {
             var input = string.IsNullOrWhiteSpace(row.Model.Content) ? row.Model.Title : row.Model.Content;
-            var result = await _aiAnalyzer.AnalyzeAsync(input, _settings);
+            var result = await AnalyzeContentAsync(row.Model.Title, input);
             if (!_rowMap.ContainsKey(row.Model.Id)) return;
 
+            var aiTitle = result.Title?.Trim();
+            if (!string.IsNullOrWhiteSpace(aiTitle))
+            {
+                row.Model.Title = aiTitle;
+            }
             row.Model.Category = string.IsNullOrWhiteSpace(result.Category) ? "其他" : result.Category;
             row.Model.Tags = result.Tags;
             row.Model.Stars = Math.Clamp(result.Stars, 0, 5);
             row.Model.Summary = result.Summary;
+            if (result.DueDate.HasValue)
+            {
+                row.Model.DueDate = result.DueDate.Value;
+            }
             row.Model.UpdatedAt = DateTime.Now;
             row.Refresh();
             SaveNotes();
             RebuildSidebar();
             RefreshVisibleNotes();
-            StatusText = result.UsedLocalFallback ? "AI 未调用成功，已按本地规则归类" : "AI 分析完成";
+            StatusText = result.UsedLocalFallback
+                ? SyncEnabled
+                    ? "后台 AI 未调用成功，已按服务器规则归类"
+                    : "已按本地规则归类"
+                : "后台 AI 分析完成";
+            await TryUpsertAsync(row.Model);
         }
         catch (Exception ex)
         {
@@ -305,29 +459,61 @@ public sealed class MainWindowViewModel : ObservableObject
         }
     }
 
+    private async Task<AiAnalysisResult> AnalyzeContentAsync(string title, string content)
+    {
+        if (SyncEnabled &&
+            Uri.TryCreate(SyncBaseUrl, UriKind.Absolute, out var uri) &&
+            (uri.Scheme == Uri.UriSchemeHttp || uri.Scheme == Uri.UriSchemeHttps))
+        {
+            try
+            {
+                var result = await _syncService.AnalyzeAsync(SyncBaseUrl, title, content);
+                SyncStatusText = result.UsedLocalFallback
+                    ? "后台 AI 使用服务器本地规则"
+                    : "后台 AI 已配置";
+                return result;
+            }
+            catch
+            {
+                SyncStatusText = "当前离线，使用本地规则";
+            }
+        }
+
+        var local = await _aiAnalyzer.AnalyzeAsync(content, _settings, title);
+        local.UsedLocalFallback = true;
+        return local;
+    }
+
     private async Task AnalyzeSelectedAsync()
     {
         if (SelectedNote is null) return;
         await AnalyzeAndApplyAsync(SelectedNote);
+        ShowToast(StatusText);
     }
 
-    private void SaveSelected()
+    private async Task SaveSelectedAsync()
     {
+        if (SelectedNote is null) return;
         SaveNotes();
         StatusText = $"已保存 {DateTime.Now:HH:mm:ss}";
+        ShowToast("已保存");
+        await TryUpsertAsync(SelectedNote.Model);
     }
 
-    private void DeleteSelected()
+    private async Task DeleteSelectedAsync()
     {
         if (SelectedNote is null) return;
         var model = SelectedNote.Model;
+        var id = model.Id;
         _notes.Remove(model);
-        _rowMap.Remove(model.Id);
+        _rowMap.Remove(id);
         SelectedNote = null;
         SaveNotes();
         RebuildSidebar();
         RefreshVisibleNotes();
         StatusText = "已删除笔记";
+        ShowToast("已删除");
+        await TryDeleteAsync(id);
     }
 
     private void SelectView(object? parameter)
@@ -485,13 +671,209 @@ public sealed class MainWindowViewModel : ObservableObject
 
     private void SaveSettings() => _dataService.SaveSettings(_settings);
 
+    private async Task SyncNowAsync()
+    {
+        if (IsSyncing) return;
+        if (!SyncEnabled)
+        {
+            SyncStatusText = "云同步未启用";
+            return;
+        }
+
+        var baseUrl = SyncBaseUrl?.Trim().TrimEnd('/') ?? "";
+        if (!Uri.TryCreate(baseUrl, UriKind.Absolute, out var uri) ||
+            (uri.Scheme != Uri.UriSchemeHttp && uri.Scheme != Uri.UriSchemeHttps))
+        {
+            SyncStatusText = "后台地址无效";
+            return;
+        }
+
+        IsSyncing = true;
+        SyncStatusText = "正在获取后台笔记…";
+        try
+        {
+            var remoteNotes = await _syncService.GetNotesAsync(baseUrl);
+            var localById = _notes.ToDictionary(x => x.Id);
+            var remoteIds = new HashSet<string>(StringComparer.Ordinal);
+            var uploadList = new List<NoteItem>();
+            var localChanged = false;
+
+            foreach (var remote in remoteNotes)
+            {
+                remoteIds.Add(remote.Id);
+                if (localById.TryGetValue(remote.Id, out var local))
+                {
+                    if (RemoteTimestampUtc(remote.UpdatedAt) > LocalTimestampUtc(local.UpdatedAt))
+                    {
+                        ApplyRemoteNote(local, remote);
+                        localChanged = true;
+                    }
+                    else if (LocalTimestampUtc(local.UpdatedAt) > RemoteTimestampUtc(remote.UpdatedAt))
+                    {
+                        uploadList.Add(local);
+                    }
+                }
+                else
+                {
+                    var note = CreateFromRemote(remote);
+                    _notes.Add(note);
+                    _rowMap[note.Id] = new NoteRowVm(note, OnNoteChanged, OnNoteMetaChanged);
+                    localChanged = true;
+                }
+            }
+
+            foreach (var local in _notes)
+            {
+                if (!remoteIds.Contains(local.Id))
+                    uploadList.Add(local);
+            }
+
+            if (uploadList.Count > 0)
+            {
+                SyncStatusText = $"正在上传 {uploadList.Count} 条本地笔记…";
+                await _syncService.BatchUpsertAsync(baseUrl, uploadList);
+            }
+
+            if (localChanged)
+            {
+                SaveNotes();
+                RebuildSidebar();
+                RefreshVisibleNotes();
+            }
+
+            SyncStatusText = $"同步完成，本地 {_notes.Count} 条笔记";
+            StatusText = SyncStatusText;
+        }
+        catch
+        {
+            SyncStatusText = "当前离线，使用本地数据";
+            StatusText = SyncStatusText;
+        }
+        finally
+        {
+            IsSyncing = false;
+        }
+    }
+
+    private async Task TryUpsertAsync(NoteItem note)
+    {
+        if (!SyncEnabled) return;
+
+        try
+        {
+            await _syncService.UpsertAsync(SyncBaseUrl, note);
+            SyncStatusText = "已同步到后台";
+        }
+        catch
+        {
+            SyncStatusText = "当前离线，已保存在本地";
+            StatusText = SyncStatusText;
+        }
+    }
+
+    private async Task TryDeleteAsync(string id)
+    {
+        if (!SyncEnabled) return;
+
+        try
+        {
+            await _syncService.DeleteAsync(SyncBaseUrl, id);
+            SyncStatusText = "已同步删除";
+        }
+        catch (Exception ex)
+        {
+            if (ex.Message.Contains("不存在", StringComparison.OrdinalIgnoreCase))
+            {
+                SyncStatusText = "后台笔记不存在，已忽略";
+                return;
+            }
+
+            SyncStatusText = "当前离线，删除仅在本地生效";
+            StatusText = SyncStatusText;
+        }
+    }
+
+    private static NoteItem CreateFromRemote(NoteItem remote)
+    {
+        return new NoteItem
+        {
+            Id = remote.Id,
+            Title = remote.Title,
+            Content = remote.Content,
+            Summary = remote.Summary,
+            Category = string.IsNullOrWhiteSpace(remote.Category) ? "未分类" : remote.Category,
+            Tags = new List<string>(remote.Tags),
+            Stars = Math.Clamp(remote.Stars, 0, 5),
+            DueDate = remote.DueDate,
+            CreatedAt = RemoteToLocal(remote.CreatedAt),
+            UpdatedAt = RemoteToLocal(remote.UpdatedAt)
+        };
+    }
+
+    private void ApplyRemoteNote(NoteItem local, NoteItem remote)
+    {
+        local.Title = remote.Title;
+        local.Content = remote.Content;
+        local.Summary = remote.Summary;
+        local.Category = string.IsNullOrWhiteSpace(remote.Category) ? "未分类" : remote.Category;
+        local.Tags = new List<string>(remote.Tags);
+        local.Stars = Math.Clamp(remote.Stars, 0, 5);
+        local.DueDate = remote.DueDate;
+        local.CreatedAt = RemoteToLocal(remote.CreatedAt);
+        local.UpdatedAt = RemoteToLocal(remote.UpdatedAt);
+        _ = _rowMap.TryGetValue(local.Id, out var row);
+        row?.Refresh();
+    }
+
+    private static DateTime RemoteTimestampUtc(DateTime value)
+    {
+        return value.Kind switch
+        {
+            DateTimeKind.Utc => value,
+            DateTimeKind.Local => value.ToUniversalTime(),
+            _ => DateTime.SpecifyKind(value, DateTimeKind.Utc)
+        };
+    }
+
+    private static DateTime LocalTimestampUtc(DateTime value)
+    {
+        return value.Kind switch
+        {
+            DateTimeKind.Utc => value,
+            DateTimeKind.Local => value.ToUniversalTime(),
+            _ => DateTime.SpecifyKind(value, DateTimeKind.Local).ToUniversalTime()
+        };
+    }
+
+    private static DateTime RemoteToLocal(DateTime value)
+    {
+        return value.Kind switch
+        {
+            DateTimeKind.Utc => value.ToLocalTime(),
+            DateTimeKind.Local => value,
+            _ => DateTime.SpecifyKind(value, DateTimeKind.Utc).ToLocalTime()
+        };
+    }
+
     private async Task TestAiAsync()
     {
         IsTestingAi = true;
-        AiTestResult = "正在测试连接…";
+        AiTestResult = "正在测试后台连接…";
         try
         {
-            AiTestResult = await _aiAnalyzer.TestAsync(_settings);
+            if (!SyncEnabled)
+            {
+                AiTestResult = "请先启用云同步并填写后台地址";
+                return;
+            }
+
+            var result = await _syncService.AnalyzeAsync(
+                SyncBaseUrl,
+                "连接测试",
+                "这是一条用于测试后台 AI 配置的笔记内容。");
+            AiTestResult = result.UsedLocalFallback
+                ? "后台已连通，当前使用服务器本地规则"
+                : $"后台 AI 已连通，分类：{result.Category}";
         }
         catch (Exception ex)
         {

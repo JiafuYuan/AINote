@@ -8,3 +8,5 @@ publish/
 artifacts/
 .DS_Store
 src/AINote/Assets/Tray*.ico
+_probe_build/
+_probe_run/

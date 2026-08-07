@@ -1,7 +1,7 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              x:Class="AINote.Views.MainView"
-             Background="#f5f6f8"
+             Background="#eef0f4"
              FontSize="14">
 
     <UserControl.Styles>
@@ -31,31 +31,145 @@
         </Style>
 
         <Style Selector="Border.setting-row">
-            <Setter Property="CornerRadius" Value="12" />
-            <Setter Property="Padding" Value="14" />
-            <Setter Property="Background" Value="#f7f8fa" />
-            <Setter Property="BorderBrush" Value="#e6e8eb" />
+            <Setter Property="CornerRadius" Value="14" />
+            <Setter Property="Padding" Value="16" />
+            <Setter Property="Background" Value="#ffffff" />
+            <Setter Property="BorderBrush" Value="#e8ebf0" />
             <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="BoxShadow" Value="0 2 10 0 #0d000000" />
         </Style>
 
         <Style Selector="Border.note-row">
-            <Setter Property="CornerRadius" Value="10" />
-            <Setter Property="Padding" Value="12" />
+            <Setter Property="CornerRadius" Value="12" />
+            <Setter Property="Padding" Value="14" />
+            <Setter Property="Background" Value="#ffffff" />
+            <Setter Property="BorderBrush" Value="#e7ebf0" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="Margin" Value="0,0,0,8" />
+            <Setter Property="BoxShadow" Value="0 1 3 0 #0d000000" />
+        </Style>
+        <Style Selector="Border.note-row:pointerover">
+            <Setter Property="Background" Value="#f5fbf7" />
+            <Setter Property="BorderBrush" Value="#bfe3cd" />
+            <Setter Property="BoxShadow" Value="0 3 10 0 #162ea44f" />
+        </Style>
+        <Style Selector="ListBoxItem">
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="Margin" Value="0" />
             <Setter Property="Background" Value="Transparent" />
-            <Setter Property="BorderThickness" Value="0" />
-            <Setter Property="Margin" Value="0,0,0,6" />
+            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+        </Style>
+        <Style Selector="ListBoxItem:pointerover /template/ ContentPresenter">
+            <Setter Property="Background" Value="Transparent" />
+        </Style>
+        <Style Selector="ListBoxItem:selected /template/ ContentPresenter">
+            <Setter Property="Background" Value="Transparent" />
+        </Style>
+        <Style Selector="ListBoxItem:selected Border.note-row">
+            <Setter Property="Background" Value="#eef8f1" />
+            <Setter Property="BorderBrush" Value="#2ea44f" />
+            <Setter Property="BoxShadow" Value="0 2 8 0 #222ea44f" />
+        </Style>
+
+        <Style Selector="TextBox">
+            <Setter Property="Background" Value="#ffffff" />
+            <Setter Property="BorderBrush" Value="#dce2ea" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="10" />
+            <Setter Property="Padding" Value="12,8" />
+            <Setter Property="FontSize" Value="14" />
+            <Setter Property="TextAlignment" Value="Left" />
+            <Setter Property="VerticalContentAlignment" Value="Top" />
+        </Style>
+        <Style Selector="TextBox:focus">
+            <Setter Property="BorderBrush" Value="#2ea44f" />
+            <Setter Property="BorderThickness" Value="1.5" />
+        </Style>
+
+        <Style Selector="TextBox.search-box">
+            <Setter Property="Background" Value="#ffffff" />
+            <Setter Property="BorderBrush" Value="#dfe4eb" />
+            <Setter Property="CornerRadius" Value="12" />
+            <Setter Property="Padding" Value="12,8" />
+            <Setter Property="MinHeight" Value="38" />
+        </Style>
+        <Style Selector="TextBox.search-box:focus">
+            <Setter Property="BorderBrush" Value="#2ea44f" />
+            <Setter Property="BorderThickness" Value="1.5" />
+        </Style>
+
+        <Style Selector="TextBox.add-note-input">
+            <Setter Property="Background" Value="#fbfcfd" />
+            <Setter Property="BorderBrush" Value="#dfe4eb" />
+            <Setter Property="CornerRadius" Value="16" />
+            <Setter Property="Padding" Value="18,16" />
+            <Setter Property="FontSize" Value="16" />
+            <Setter Property="MinHeight" Value="320" />
+        </Style>
+        <Style Selector="TextBox.add-note-input:focus">
+            <Setter Property="Background" Value="#ffffff" />
+            <Setter Property="BorderBrush" Value="#2ea44f" />
+        </Style>
+        <Style Selector="TextBox.add-note-input.wide">
+            <Setter Property="MinWidth" Value="600" />
+        </Style>
+        <Style Selector="TextBox.add-title-input">
+            <Setter Property="Background" Value="#fbfcfd" />
+            <Setter Property="BorderBrush" Value="#dfe4eb" />
+            <Setter Property="CornerRadius" Value="12" />
+            <Setter Property="Padding" Value="14,10" />
+            <Setter Property="FontSize" Value="18" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+        </Style>
+
+        <Style Selector="Border.add-dialog">
+            <Setter Property="Background" Value="#ffffff" />
+            <Setter Property="BorderBrush" Value="#e4e8ee" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="20" />
+            <Setter Property="Padding" Value="26" />
+            <Setter Property="BoxShadow" Value="0 24 70 0 #3d0f1720" />
+        </Style>
+        <Style Selector="Border.add-dialog.wide">
+            <Setter Property="MinWidth" Value="620" />
+            <Setter Property="MinHeight" Value="560" />
+        </Style>
+
+        <Style Selector="Border.empty-state-card">
+            <Setter Property="Background" Value="#ffffff" />
+            <Setter Property="BorderBrush" Value="#e7ebf0" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="16" />
+            <Setter Property="Padding" Value="28" />
+            <Setter Property="BoxShadow" Value="0 2 10 0 #0d000000" />
+        </Style>
+
+        <Style Selector="Border.fab-shell">
+            <Setter Property="Width" Value="58" />
+            <Setter Property="Height" Value="58" />
+            <Setter Property="CornerRadius" Value="29" />
+            <Setter Property="Background" Value="#2ea44f" />
+            <Setter Property="BoxShadow" Value="0 12 28 0 #402ea44f" />
+        </Style>
+        <Style Selector="Border.fab-shell:pointerover">
+            <Setter Property="Background" Value="#248a43" />
+            <Setter Property="BoxShadow" Value="0 14 32 0 #4d2ea44f" />
+        </Style>
+        <Style Selector="Border.fab-shell:pressed">
+            <Setter Property="Background" Value="#1f7a3d" />
+            <Setter Property="BoxShadow" Value="0 8 20 0 #402ea44f" />
         </Style>
 
         <Style Selector="Button.ghost-btn">
-            <Setter Property="Background" Value="Transparent" />
-            <Setter Property="BorderBrush" Value="#dcdfe6" />
+            <Setter Property="Background" Value="#ffffff" />
+            <Setter Property="BorderBrush" Value="#dce2ea" />
             <Setter Property="BorderThickness" Value="1" />
             <Setter Property="CornerRadius" Value="8" />
             <Setter Property="Foreground" Value="#606266" />
-            <Setter Property="Padding" Value="12,6" />
+            <Setter Property="Padding" Value="14,7" />
         </Style>
         <Style Selector="Button.ghost-btn:pointerover /template/ ContentPresenter">
-            <Setter Property="Background" Value="#eef0f3" />
+            <Setter Property="Background" Value="#f3f6f9" />
         </Style>
         <Style Selector="Button.ghost-btn.danger">
             <Setter Property="Foreground" Value="#e24d4d" />
@@ -68,7 +182,8 @@
             <Setter Property="Background" Value="#2ea44f" />
             <Setter Property="Foreground" Value="White" />
             <Setter Property="CornerRadius" Value="8" />
-            <Setter Property="Padding" Value="16,7" />
+            <Setter Property="Padding" Value="18,8" />
+            <Setter Property="FontWeight" Value="SemiBold" />
         </Style>
         <Style Selector="Button.primary-btn:pointerover /template/ ContentPresenter">
             <Setter Property="Background" Value="#278f45" />
@@ -111,28 +226,41 @@
             <Setter Property="Foreground" Value="#f59e0b" />
         </Style>
 
+        <Style Selector="Button.fab-btn">
+            <Setter Property="Width" Value="58" />
+            <Setter Property="Height" Value="58" />
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Foreground" Value="White" />
+            <Setter Property="FontSize" Value="26" />
+            <Setter Property="FontWeight" Value="Light" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="HorizontalContentAlignment" Value="Center" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
+        </Style>
+        <Style Selector="Button.fab-btn:pointerover /template/ ContentPresenter">
+            <Setter Property="Background" Value="Transparent" />
+        </Style>
+        <Style Selector="Button.fab-btn:pressed /template/ ContentPresenter">
+            <Setter Property="Background" Value="Transparent" />
+        </Style>
+
     </UserControl.Styles>
 
     <Grid RowDefinitions="Auto,*">
 
         <!-- 顶栏 -->
-        <Border Grid.Row="0" Background="#ffffff" BorderBrush="#e6e8eb" BorderThickness="0,0,0,1" Padding="16,10">
+        <Border Grid.Row="0" Background="#ffffff" BorderBrush="#e6e8eb" BorderThickness="0,0,0,0"
+                Padding="18,12" BoxShadow="0 1 8 0 #12000000">
             <Grid ColumnDefinitions="Auto,Auto,*,Auto" ColumnSpacing="12">
                 <Button Grid.Column="0" Content="☰" Command="{Binding ToggleSidebarCommand}" Classes="icon-btn"
                         IsVisible="{Binding IsNarrow}" VerticalAlignment="Center" />
-                <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="12" VerticalAlignment="Center">
-                    <Border Width="40" Height="40" CornerRadius="10" Background="#eaf3ec" BorderBrush="#d7e8dc" BorderThickness="1">
-                        <TextBlock Text="记" FontSize="18" FontWeight="Bold" Foreground="#2ea44f"
-                                   HorizontalAlignment="Center" VerticalAlignment="Center" />
-                    </Border>
-                    <StackPanel VerticalAlignment="Center" Spacing="2">
-                        <TextBlock Text="AI 记事本" FontSize="18" FontWeight="SemiBold" Foreground="#303133" />
-                        <TextBlock Text="我的笔记" FontSize="12" Foreground="#909399" />
-                    </StackPanel>
+                <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="2">
+                    <TextBlock Text="AI 记事本" FontSize="18" FontWeight="SemiBold" Foreground="#303133" />
+                    <TextBlock Text="我的笔记" FontSize="12" Foreground="#909399" />
                 </StackPanel>
-                <TextBox Grid.Column="2" Text="{Binding SearchText}" PlaceholderText="搜索标题、内容、标签、分类"
+                <TextBox Grid.Column="2" Text="{Binding SearchText}" PlaceholderText="搜索标题、内容、标签、分类" Classes="search-box"
                          VerticalAlignment="Center" Margin="0,0,0,0" />
-                <Button Grid.Column="3" Content="AI 设置" Command="{Binding ToggleSettingsCommand}" Classes="ghost-btn"
+                <Button Grid.Column="3" Content="设置" Command="{Binding ToggleSettingsCommand}" Classes="ghost-btn"
                         VerticalAlignment="Center" />
             </Grid>
         </Border>
@@ -142,9 +270,9 @@
 
             <!-- 侧边栏 -->
             <Border x:Name="SidebarPanel" Grid.Column="0" Background="#f7f8fa"
-                    BorderBrush="#e6e8eb" BorderThickness="0,0,1,0">
+                    BorderBrush="#e5e9ef" BorderThickness="0,0,1,0">
                 <Grid RowDefinitions="Auto,Auto,*,Auto" Margin="14">
-                    <Grid Grid.Row="0" ColumnDefinitions="*,Auto" Margin="4,2,0,10">
+                    <Grid Grid.Row="0" ColumnDefinitions="*,Auto" Margin="4,6,0,12">
                         <TextBlock Text="视图" FontSize="18" FontWeight="Bold" Foreground="#303133" VerticalAlignment="Center" />
                         <Button Grid.Column="1" Content="←" Command="{Binding CloseSidebarCommand}" Classes="icon-btn"
                                 IsVisible="{Binding IsNarrow}" />
@@ -224,21 +352,15 @@
             </Border>
 
             <!-- 中间列表 -->
-            <Border x:Name="MainListPanel" Grid.Column="1" Background="#ffffff"
-                    BorderBrush="#e6e8eb" BorderThickness="0,0,1,0">
-                <Grid RowDefinitions="Auto,Auto,*,Auto" Margin="16">
+            <Border x:Name="MainListPanel" Grid.Column="1" Background="#eef0f4"
+                    BorderBrush="#e2e6ec" BorderThickness="0,0,1,0">
+                <Grid RowDefinitions="Auto,*,Auto" Margin="16">
                     <Grid Grid.Row="0" ColumnDefinitions="*,Auto" Margin="0,4,0,12">
                         <TextBlock Text="{Binding CurrentViewTitle}" FontSize="22" FontWeight="Bold" Foreground="#303133" />
                         <TextBlock Grid.Column="1" Text="{Binding CurrentViewCountText}" Foreground="#909399" VerticalAlignment="Center" />
                     </Grid>
 
-                    <Grid Grid.Row="1" ColumnDefinitions="*,Auto" ColumnSpacing="10" Margin="0,0,0,14">
-                        <TextBox x:Name="QuickInput" Text="{Binding QuickText}" PlaceholderText="快速记录"
-                                 KeyDown="OnQuickInputKeyDown" />
-                        <Button Grid.Column="1" Content="添加" Command="{Binding QuickAddCommand}" Classes="primary-btn" />
-                    </Grid>
-
-                    <ScrollViewer Grid.Row="2">
+                    <ScrollViewer Grid.Row="1">
                         <ListBox ItemsSource="{Binding VisibleNotes}" SelectedItem="{Binding SelectedNote}"
                                  Background="Transparent" BorderThickness="0">
                             <ListBox.ItemTemplate>
@@ -265,7 +387,7 @@
                         </ListBox>
                     </ScrollViewer>
 
-                    <StackPanel Grid.Row="3" Orientation="Horizontal" Spacing="10" Margin="0,10,0,0">
+                    <StackPanel Grid.Row="2" Orientation="Horizontal" Spacing="10" Margin="0,10,0,0">
                         <TextBlock Text="{Binding StatusText}" Classes="hint" />
                         <TextBlock Text="AI 分析中…" FontSize="12" Foreground="#2ea44f" IsVisible="{Binding IsAiAnalyzing}" />
                     </StackPanel>
@@ -273,76 +395,106 @@
             </Border>
 
             <!-- 右侧详情 -->
-            <Border x:Name="DetailPanel" Grid.Column="2" Background="#ffffff"
-                    BorderBrush="#e6e8eb" BorderThickness="1,0,0,0">
+            <Border x:Name="DetailPanel" Grid.Column="2" Background="#eef0f4"
+                    BorderBrush="#e2e6ec" BorderThickness="1,0,0,0">
                 <Grid RowDefinitions="Auto,*">
-                    <Grid Grid.Row="0" ColumnDefinitions="Auto,*,Auto,Auto,Auto" ColumnSpacing="8" Margin="18,14,18,10">
-                        <Button Grid.Column="0" Content="←" Command="{Binding BackCommand}" Classes="icon-btn"
-                                IsVisible="{Binding IsNarrow}" />
-                        <TextBlock Grid.Column="1" Text="笔记详情" FontSize="20" FontWeight="Bold" Foreground="#303133"
-                                   VerticalAlignment="Center" />
-                        <Button Grid.Column="2" Content="AI 分析" Command="{Binding AnalyzeNoteCommand}" Classes="ghost-btn"
-                                IsEnabled="{Binding HasSelection}" />
-                        <Button Grid.Column="3" Content="保存" Command="{Binding SaveNoteCommand}" Classes="ghost-btn"
-                                IsEnabled="{Binding HasSelection}" />
-                        <Button Grid.Column="4" Content="删除" Command="{Binding DeleteNoteCommand}" Classes="ghost-btn danger"
-                                IsEnabled="{Binding HasSelection}" />
-                    </Grid>
+                    <Border Grid.Row="0" Background="#ffffff" BorderBrush="#e2e6ec" BorderThickness="0,0,0,1">
+                        <Grid ColumnDefinitions="Auto,*,Auto,Auto,Auto,Auto" ColumnSpacing="8" Margin="18,14,18,10">
+                            <Button Grid.Column="0" Content="←" Command="{Binding BackCommand}" Classes="icon-btn"
+                                    IsVisible="{Binding IsNarrow}" />
+                            <TextBlock Grid.Column="1" Text="笔记详情" FontSize="20" FontWeight="Bold" Foreground="#303133"
+                                       VerticalAlignment="Center" />
+                            <Button Grid.Column="2" Content="AI 分析" Command="{Binding AnalyzeNoteCommand}" Classes="ghost-btn"
+                                    IsEnabled="{Binding HasSelection}" />
+                            <Button Grid.Column="3" Content="保存" Command="{Binding SaveNoteCommand}" Classes="ghost-btn"
+                                    IsEnabled="{Binding HasSelection}" />
+                            <Button Grid.Column="4" Content="取消" Command="{Binding BackCommand}" Classes="ghost-btn"
+                                    IsEnabled="{Binding HasSelection}" />
+                            <Button Grid.Column="5" Content="删除" Command="{Binding DeleteNoteCommand}" Classes="ghost-btn danger"
+                                    IsEnabled="{Binding HasSelection}" />
+                        </Grid>
+                    </Border>
 
-                    <ScrollViewer Grid.Row="1" Margin="18,4,18,18">
-                        <StackPanel Spacing="0">
-                            <StackPanel IsVisible="{Binding HasSelection}" Spacing="12">
-                            <TextBox Text="{Binding SelectedNote.Title, Mode=TwoWay}" PlaceholderText="标题"
-                                     FontSize="22" FontWeight="SemiBold" />
+                    <ScrollViewer Grid.Row="1" Margin="18,14,18,18">
+                        <StackPanel Spacing="14">
+                            <Border Classes="setting-row" IsVisible="{Binding HasSelection}">
+                                <StackPanel Spacing="12">
+                                    <TextBox Text="{Binding SelectedNote.Title, Mode=TwoWay}" PlaceholderText="标题"
+                                             FontSize="22" FontWeight="SemiBold" />
 
-                            <TextBlock Text="内容" Classes="field-label" />
-                            <TextBox Text="{Binding SelectedNote.Content, Mode=TwoWay}" PlaceholderText="记录内容"
-                                     AcceptsReturn="True" TextWrapping="Wrap" MinHeight="150" />
+                                    <TextBlock Text="内容" Classes="field-label" />
+                                    <TextBox Text="{Binding SelectedNote.Content, Mode=TwoWay}" PlaceholderText="记录内容"
+                                             AcceptsReturn="True" TextWrapping="Wrap" MinHeight="150" />
 
-                            <TextBlock Text="AI 摘要" Classes="field-label" />
-                            <TextBox Text="{Binding SelectedNote.Summary, Mode=TwoWay}" PlaceholderText="AI 生成的一句话摘要"
-                                     TextWrapping="Wrap" />
+                                    <TextBlock Text="AI 摘要" Classes="field-label" />
+                                    <TextBox Text="{Binding SelectedNote.Summary, Mode=TwoWay}" PlaceholderText="AI 生成的一句话摘要"
+                                             TextWrapping="Wrap" />
 
-                            <TextBlock Text="分类" Classes="field-label" />
-                            <TextBox Text="{Binding SelectedNote.Category, Mode=TwoWay}" PlaceholderText="如：工作、学习、生活" />
+                                    <TextBlock Text="分类" Classes="field-label" />
+                                    <TextBox Text="{Binding SelectedNote.Category, Mode=TwoWay}" PlaceholderText="如：工作、学习、生活" />
 
-                            <TextBlock Text="标签" Classes="field-label" />
-                            <TextBox Text="{Binding SelectedNote.TagsText, Mode=TwoWay}" PlaceholderText="标签，用逗号分隔" />
+                                    <TextBlock Text="标签" Classes="field-label" />
+                                    <TextBox Text="{Binding SelectedNote.TagsText, Mode=TwoWay}" PlaceholderText="标签，用逗号分隔" />
 
-                            <StackPanel Orientation="Horizontal" Spacing="8">
-                                <TextBlock Text="星级" VerticalAlignment="Center" Classes="field-label" />
-                                <Button Content="无" Command="{Binding SetStarsCommand}" CommandParameter="0" Classes="star-btn" />
-                                <Button Content="1★" Command="{Binding SetStarsCommand}" CommandParameter="1" Classes="star-btn" />
-                                <Button Content="2★" Command="{Binding SetStarsCommand}" CommandParameter="2" Classes="star-btn" />
-                                <Button Content="3★" Command="{Binding SetStarsCommand}" CommandParameter="3" Classes="star-btn" />
-                                <Button Content="4★" Command="{Binding SetStarsCommand}" CommandParameter="4" Classes="star-btn" />
-                                <Button Content="5★" Command="{Binding SetStarsCommand}" CommandParameter="5" Classes="star-btn" />
-                            </StackPanel>
+                                    <StackPanel Orientation="Horizontal" Spacing="8">
+                                        <TextBlock Text="星级" VerticalAlignment="Center" Classes="field-label" />
+                                        <Button Content="无" Command="{Binding SetStarsCommand}" CommandParameter="0" Classes="star-btn" />
+                                        <Button Content="1★" Command="{Binding SetStarsCommand}" CommandParameter="1" Classes="star-btn" />
+                                        <Button Content="2★" Command="{Binding SetStarsCommand}" CommandParameter="2" Classes="star-btn" />
+                                        <Button Content="3★" Command="{Binding SetStarsCommand}" CommandParameter="3" Classes="star-btn" />
+                                        <Button Content="4★" Command="{Binding SetStarsCommand}" CommandParameter="4" Classes="star-btn" />
+                                        <Button Content="5★" Command="{Binding SetStarsCommand}" CommandParameter="5" Classes="star-btn" />
+                                    </StackPanel>
 
-                            <StackPanel Orientation="Horizontal" Spacing="8">
-                                <TextBlock Text="日期" VerticalAlignment="Center" Classes="field-label" />
-                                <TextBox Text="{Binding SelectedNote.DueDateText, Mode=TwoWay}" Width="150"
-                                         PlaceholderText="yyyy-MM-dd" />
-                                <Button Content="今天" Command="{Binding SetDueTodayCommand}" Classes="ghost-btn" />
-                                <Button Content="明天" Command="{Binding SetDueTomorrowCommand}" Classes="ghost-btn" />
-                                <Button Content="清除" Command="{Binding ClearDueCommand}" Classes="ghost-btn" />
-                            </StackPanel>
+                                    <StackPanel Orientation="Horizontal" Spacing="8">
+                                        <TextBlock Text="日期" VerticalAlignment="Center" Classes="field-label" />
+                                        <TextBox Text="{Binding SelectedNote.DueDateText, Mode=TwoWay}" Width="150"
+                                                 PlaceholderText="yyyy-MM-dd" />
+                                        <Button Content="今天" Command="{Binding SetDueTodayCommand}" Classes="ghost-btn" />
+                                        <Button Content="明天" Command="{Binding SetDueTomorrowCommand}" Classes="ghost-btn" />
+                                        <Button Content="清除" Command="{Binding ClearDueCommand}" Classes="ghost-btn" />
+                                    </StackPanel>
 
-                            <Button Content="AI 分析当前笔记" Command="{Binding AnalyzeNoteCommand}" Classes="primary-btn"
-                                    HorizontalAlignment="Left" Margin="0,6,0,0" />
-                            <TextBlock Text="{Binding StatusText}" Classes="hint" />
-                            </StackPanel>
+                                    <TextBlock Text="{Binding StatusText}" Classes="hint" />
+                                </StackPanel>
+                            </Border>
 
-                            <StackPanel IsVisible="{Binding NoSelection}" Spacing="10" HorizontalAlignment="Center"
-                                        VerticalAlignment="Center" Margin="0,80,0,0">
-                                <TextBlock Text="选择一条笔记查看详情" FontSize="18" FontWeight="SemiBold"
-                                           Foreground="#909399" HorizontalAlignment="Center" />
-                            </StackPanel>
+                            <Border Classes="empty-state-card" IsVisible="{Binding NoSelection}" Width="300"
+                                    HorizontalAlignment="Center" Margin="0,80,0,0">
+                                <StackPanel Spacing="14" HorizontalAlignment="Center">
+                                    <Border Width="64" Height="64" CornerRadius="20" Background="#eaf3ec"
+                                            BorderBrush="#d7e8dc" BorderThickness="1">
+                                        <TextBlock Text="记" FontSize="26" FontWeight="Bold" Foreground="#2ea44f"
+                                                   HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                    </Border>
+                                    <TextBlock Text="选择一条笔记查看详情" FontSize="18" FontWeight="SemiBold"
+                                               Foreground="#606266" HorizontalAlignment="Center" />
+                                </StackPanel>
+                            </Border>
                         </StackPanel>
                     </ScrollViewer>
                 </Grid>
             </Border>
         </Grid>
+
+        <!-- 右下角快速新建 -->
+        <Border Grid.Row="1" Classes="fab-shell" HorizontalAlignment="Right" VerticalAlignment="Bottom"
+                Margin="0,0,30,26" IsVisible="{Binding IsAddNoteClosed}">
+            <Button Content="＋" Classes="fab-btn" Command="{Binding OpenAddNoteCommand}" />
+        </Border>
+
+        <!-- 应用内通知 -->
+        <Border Grid.Row="1" IsVisible="{Binding ToastOpen}" HorizontalAlignment="Right" VerticalAlignment="Bottom"
+                Margin="0,0,30,104" MinWidth="260" MaxWidth="380" Padding="16,12" CornerRadius="14"
+                Background="#ffffff" BorderBrush="#bfe3cd" BorderThickness="1"
+                BoxShadow="0 12 30 0 #33101820">
+            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
+                <TextBlock Text="{Binding ToastText}" TextWrapping="Wrap" Foreground="#303133" FontSize="14"
+                           VerticalAlignment="Center" />
+                <Button Grid.Column="1" Content="✕" Classes="icon-btn" Command="{Binding CloseToastCommand}"
+                        VerticalAlignment="Center" />
+            </Grid>
+        </Border>
 
         <!-- AI 设置抽屉 -->
         <Border Grid.RowSpan="2" IsVisible="{Binding SettingsOpen}" Background="#66000000">
@@ -350,7 +502,7 @@
                     Background="#ffffff" BorderBrush="#e6e8eb" BorderThickness="1,0,0,0">
                 <Grid RowDefinitions="Auto,*">
                     <Grid Grid.Row="0" ColumnDefinitions="*,Auto" Margin="22,18,16,10">
-                        <TextBlock Text="AI 设置" FontSize="22" FontWeight="Bold" Foreground="#303133" />
+                        <TextBlock Text="设置" FontSize="22" FontWeight="Bold" Foreground="#303133" />
                         <Button Grid.Column="1" Content="✕" Command="{Binding CloseSettingsCommand}" Classes="icon-btn" />
                     </Grid>
 
@@ -358,13 +510,8 @@
                         <StackPanel Spacing="16">
                             <Border Classes="setting-row">
                                 <StackPanel Spacing="10">
-                                    <Grid ColumnDefinitions="*,Auto">
-                                        <StackPanel Spacing="2">
-                                            <TextBlock Text="启用 AI 分析" FontWeight="SemiBold" Foreground="#303133" />
-                                            <TextBlock Text="未启用时使用本地关键词规则自动归类" Classes="hint" />
-                                        </StackPanel>
-                                        <ToggleSwitch Grid.Column="1" IsChecked="{Binding AiEnabled}" VerticalAlignment="Center" />
-                                    </Grid>
+                                    <TextBlock Text="AI 分析由后台统一处理" FontWeight="SemiBold" Foreground="#303133" />
+                                    <TextBlock Text="AI 配置在 Web 的 AI 笔记页面维护，客户端只需连接后台地址" Classes="hint" />
                                     <Grid ColumnDefinitions="*,Auto">
                                         <StackPanel Spacing="2">
                                             <TextBlock Text="添加笔记后自动分析" FontWeight="SemiBold" Foreground="#303133" />
@@ -377,24 +524,71 @@
 
                             <Border Classes="setting-row">
                                 <StackPanel Spacing="10">
-                                    <TextBlock Text="API Base URL" Classes="field-label" />
-                                    <TextBox Text="{Binding ApiBaseUrl}" PlaceholderText="https://api.openai.com/v1" />
-                                    <TextBlock Text="API Key" Classes="field-label" />
-                                    <TextBox Text="{Binding ApiKey}" PlaceholderText="sk-..." />
-                                    <TextBlock Text="模型" Classes="field-label" />
-                                    <TextBox Text="{Binding Model}" PlaceholderText="gpt-4o-mini" />
-                                    <TextBlock Text="温度" Classes="field-label" />
-                                    <TextBox Text="{Binding TemperatureText}" PlaceholderText="0.2" />
+                                    <Grid ColumnDefinitions="*,Auto">
+                                        <StackPanel Spacing="2">
+                                            <TextBlock Text="云同步" FontWeight="SemiBold" Foreground="#303133" />
+                                            <TextBlock Text="使用 Bookmarks 统一后台，多端同步笔记" Classes="hint" />
+                                        </StackPanel>
+                                        <ToggleSwitch Grid.Column="1" IsChecked="{Binding SyncEnabled}" VerticalAlignment="Center" />
+                                    </Grid>
+                                    <TextBlock Text="后台地址" Classes="field-label" />
+                                    <TextBox Text="{Binding SyncBaseUrl}" PlaceholderText="http://localhost:19001" />
+                                    <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10">
+                                        <Button Content="立即同步" Command="{Binding SyncNowCommand}" Classes="primary-btn"
+                                                IsEnabled="{Binding !IsSyncing}" HorizontalAlignment="Left" />
+                                        <TextBlock Grid.Column="1" Text="{Binding SyncStatusText}" Classes="hint"
+                                                   VerticalAlignment="Center" />
+                                    </Grid>
                                 </StackPanel>
                             </Border>
 
-                            <Button Content="测试连接" Command="{Binding TestAiCommand}" Classes="primary-btn"
+                            <Button Content="测试后台连接" Command="{Binding TestAiCommand}" Classes="primary-btn"
                                     IsEnabled="{Binding !IsTestingAi}" HorizontalAlignment="Left" />
                             <TextBlock Text="{Binding AiTestResult}" Classes="hint" />
                             <Button Content="关闭" Command="{Binding CloseSettingsCommand}" Classes="ghost-btn"
                                     HorizontalAlignment="Left" />
                         </StackPanel>
                     </ScrollViewer>
+                </Grid>
+            </Border>
+        </Border>
+
+        <!-- 新建笔记弹窗 -->
+        <Border Grid.RowSpan="2" IsVisible="{Binding AddNoteOpen}" Background="#66101820">
+            <Border x:Name="AddDialog" Classes="add-dialog" HorizontalAlignment="Center" VerticalAlignment="Center"
+                    MaxWidth="760" MaxHeight="700" Margin="20,24">
+                <Grid RowDefinitions="Auto,Auto,*,Auto">
+                    <Border Grid.Row="0" Width="44" Height="4" CornerRadius="2" Background="#2ea44f"
+                            HorizontalAlignment="Left" Margin="0,0,0,16" />
+                    <Grid Grid.Row="1" ColumnDefinitions="*,Auto" ColumnSpacing="12" Margin="0,0,0,18">
+                        <StackPanel Spacing="3">
+                            <TextBlock Text="新建笔记" FontSize="24" FontWeight="Bold" Foreground="#24292f" />
+                            <TextBlock Text="随手记录" Classes="hint" />
+                        </StackPanel>
+                        <Button Grid.Column="1" Content="✕" Classes="icon-btn" Command="{Binding CloseAddNoteCommand}"
+                                VerticalAlignment="Top" />
+                    </Grid>
+
+                    <Grid Grid.Row="2" RowDefinitions="Auto,Auto,*" Margin="0,0,0,18">
+                        <TextBox Grid.Row="0" Text="{Binding AddNoteTitle, Mode=TwoWay}" Classes="add-title-input"
+                                 PlaceholderText="标题（可选）" Margin="0,0,0,10" />
+
+                        <Grid Grid.Row="1" ColumnDefinitions="*,Auto" Margin="0,0,0,8">
+                            <TextBlock Text="内容" Classes="field-label" VerticalAlignment="Center" />
+                            <TextBlock Grid.Column="1" Text="{Binding AddNoteText.Length, StringFormat='{}{0} 字'}"
+                                       Classes="field-label" />
+                        </Grid>
+                        <TextBox x:Name="AddNoteEditor" Grid.Row="2" Text="{Binding AddNoteText, Mode=TwoWay}" Classes="add-note-input"
+                                 PlaceholderText="输入网址、想法、待办或任意内容…" AcceptsReturn="True" TextWrapping="Wrap"
+                                 KeyDown="OnAddNoteKeyDown" />
+                    </Grid>
+
+                    <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Right" Spacing="10"
+                                Margin="0,20,0,0">
+                        <Button Content="取消" Classes="ghost-btn" Command="{Binding CloseAddNoteCommand}" />
+                        <Button Content="保存" Classes="primary-btn" Command="{Binding AddNoteCommand}"
+                                IsEnabled="{Binding !AddNoteAnalyzing}" />
+                    </StackPanel>
                 </Grid>
             </Border>
         </Border>
