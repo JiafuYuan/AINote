@@ -21,6 +21,7 @@ public partial class App : Avalonia.Application
         {
             var vm = new MainWindowViewModel();
             desktop.MainWindow = new MainWindow { DataContext = vm };
+            Services.LightTitleBar.Apply(desktop.MainWindow);
 
             if (!string.IsNullOrEmpty(CaptureDir))
             {

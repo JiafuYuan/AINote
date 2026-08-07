@@ -44,10 +44,10 @@ public sealed class SidebarItemVm : ObservableObject
     }
 
     public IBrush BackgroundBrush => IsSelected
-        ? new SolidColorBrush(Color.FromRgb(30, 41, 59))
+        ? new SolidColorBrush(Color.FromRgb(232, 243, 237))
         : Brushes.Transparent;
 
     public IBrush ForegroundBrush => IsSelected
-        ? new SolidColorBrush(Color.FromRgb(248, 250, 252))
-        : new SolidColorBrush(Color.FromRgb(203, 213, 225));
+        ? new SolidColorBrush(Color.FromRgb(38, 130, 82))
+        : new SolidColorBrush(Color.FromRgb(96, 98, 102));
 }

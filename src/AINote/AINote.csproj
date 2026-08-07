@@ -12,13 +12,13 @@
     <ApplicationIcon Condition="'$(TargetFramework)' == 'net10.0'">Assets\app.ico</ApplicationIcon>
     <AssemblyName>AINote</AssemblyName>
     <RootNamespace>AINote</RootNamespace>
-    <Version>0.1.0</Version>
-    <InformationalVersion>0.1.0</InformationalVersion>
+    <Version>0.1.1</Version>
+    <InformationalVersion>0.1.1</InformationalVersion>
 
     <ApplicationId Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">com.jiafuyuan.ainote</ApplicationId>
     <ApplicationTitle Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">AI 记事本</ApplicationTitle>
-    <ApplicationVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">1</ApplicationVersion>
-    <ApplicationDisplayVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">0.1.0</ApplicationDisplayVersion>
+    <ApplicationVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">2</ApplicationVersion>
+    <ApplicationDisplayVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">0.1.1</ApplicationDisplayVersion>
     <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">24</SupportedOSPlatformVersion>
     <AndroidManifest Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">Platforms\Android\AndroidManifest.xml</AndroidManifest>
     <AndroidPackageFormats Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">apk</AndroidPackageFormats>

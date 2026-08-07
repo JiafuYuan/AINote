@@ -5,7 +5,7 @@
         Title="AI 记事本"
         WindowStartupLocation="CenterScreen"
         Icon="/Assets/app.png"
-        Background="#0f172a"
+        Background="#f5f6f8"
         FontSize="14">
     <views:MainView />
 </Window>
