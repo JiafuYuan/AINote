@@ -31,6 +31,17 @@ public sealed class MainWindowViewModel : ObservableObject
     private bool _isAiAnalyzing;
     private bool _isTestingAi;
     private string _aiTestResult = "";
+    private bool _isCheckingUpdate;
+    private bool _isUpdateAvailable;
+    private string? _latestReleaseUrl;
+    private UpdateInfo? _latestUpdateInfo;
+    private bool _updateDialogOpen;
+    private string _updateVersionText = "";
+    private string _updateReleaseNotes = "";
+    private bool _isDownloadingUpdate;
+    private string _updateDownloadStatus = "";
+    private double _updateDownloadProgress;
+    private string _updateStatusText = $"当前版本 {UpdateService.CurrentVersionText}";
     private string _temperatureText;
     private bool _isSyncing;
     private string _syncStatusText = "未同步";
@@ -58,6 +69,11 @@ public sealed class MainWindowViewModel : ObservableObject
         ToggleSettingsCommand = new RelayCommand(() => SettingsOpen = !SettingsOpen);
         CloseSettingsCommand = new RelayCommand(() => SettingsOpen = false);
         TestAiCommand = new RelayCommand(() => _ = TestAiAsync());
+        CheckUpdateCommand = new RelayCommand(() => _ = CheckUpdateAsync());
+        OpenUpdatePageCommand = new RelayCommand(OpenUpdatePage);
+        DownloadUpdateCommand = new RelayCommand(() => _ = DownloadUpdateAsync());
+        CloseUpdateDialogCommand = new RelayCommand(() => UpdateDialogOpen = false);
+        OpenUpdateDialogCommand = new RelayCommand(OpenUpdateDialog);
         SelectViewCommand = new RelayCommand(SelectView);
         CloseSidebarCommand = new RelayCommand(() => SidebarOpen = false);
         ToggleSidebarCommand = new RelayCommand(() => SidebarOpen = !SidebarOpen);
@@ -97,6 +113,11 @@ public sealed class MainWindowViewModel : ObservableObject
     public ICommand ToggleSettingsCommand { get; }
     public ICommand CloseSettingsCommand { get; }
     public ICommand TestAiCommand { get; }
+    public ICommand CheckUpdateCommand { get; }
+    public ICommand OpenUpdatePageCommand { get; }
+    public ICommand DownloadUpdateCommand { get; }
+    public ICommand CloseUpdateDialogCommand { get; }
+    public ICommand OpenUpdateDialogCommand { get; }
     public ICommand SelectViewCommand { get; }
     public ICommand CloseSidebarCommand { get; }
     public ICommand ToggleSidebarCommand { get; }
@@ -226,6 +247,66 @@ public sealed class MainWindowViewModel : ObservableObject
     {
         get => _aiTestResult;
         set => SetProperty(ref _aiTestResult, value);
+    }
+
+    public bool IsCheckingUpdate
+    {
+        get => _isCheckingUpdate;
+        set => SetProperty(ref _isCheckingUpdate, value);
+    }
+
+    public bool IsUpdateAvailable
+    {
+        get => _isUpdateAvailable;
+        set => SetProperty(ref _isUpdateAvailable, value);
+    }
+
+    public string UpdateStatusText
+    {
+        get => _updateStatusText;
+        set => SetProperty(ref _updateStatusText, value);
+    }
+
+    public string? LatestReleaseUrl
+    {
+        get => _latestReleaseUrl;
+        set => SetProperty(ref _latestReleaseUrl, value);
+    }
+
+    public bool UpdateDialogOpen
+    {
+        get => _updateDialogOpen;
+        set => SetProperty(ref _updateDialogOpen, value);
+    }
+
+    public string UpdateVersionText
+    {
+        get => _updateVersionText;
+        set => SetProperty(ref _updateVersionText, value);
+    }
+
+    public string UpdateReleaseNotes
+    {
+        get => _updateReleaseNotes;
+        set => SetProperty(ref _updateReleaseNotes, value);
+    }
+
+    public bool IsDownloadingUpdate
+    {
+        get => _isDownloadingUpdate;
+        set => SetProperty(ref _isDownloadingUpdate, value);
+    }
+
+    public string UpdateDownloadStatus
+    {
+        get => _updateDownloadStatus;
+        set => SetProperty(ref _updateDownloadStatus, value);
+    }
+
+    public double UpdateDownloadProgress
+    {
+        get => _updateDownloadProgress;
+        set => SetProperty(ref _updateDownloadProgress, value);
     }
 
     public bool AiEnabled
@@ -911,6 +992,114 @@ public sealed class MainWindowViewModel : ObservableObject
         finally
         {
             IsTestingAi = false;
+        }
+    }
+
+    private async Task CheckUpdateAsync()
+    {
+        if (IsCheckingUpdate)
+            return;
+
+        IsCheckingUpdate = true;
+        UpdateStatusText = "正在检查更新…";
+        IsUpdateAvailable = false;
+        _latestUpdateInfo = null;
+        try
+        {
+            var info = await UpdateService.CheckAsync();
+            if (info is null)
+            {
+                UpdateStatusText = "检查更新失败，请检查网络";
+                return;
+            }
+
+            if (!info.HasUpdate)
+            {
+                UpdateStatusText = $"当前已是最新版本 {UpdateService.CurrentVersionText}";
+                return;
+            }
+
+            _latestUpdateInfo = info;
+            LatestReleaseUrl = info.HtmlUrl;
+            IsUpdateAvailable = true;
+            UpdateVersionText = info.Tag.TrimStart('v', 'V');
+            UpdateReleaseNotes = string.IsNullOrWhiteSpace(info.Body)
+                ? "暂无更新说明，可点击手动下载查看发布页。"
+                : info.Body;
+            UpdateDownloadStatus = "";
+            UpdateDownloadProgress = 0;
+            UpdateDialogOpen = true;
+            UpdateStatusText = $"发现新版本 {UpdateVersionText}";
+        }
+        catch
+        {
+            UpdateStatusText = "检查更新失败，请稍后重试";
+        }
+        finally
+        {
+            IsCheckingUpdate = false;
+        }
+    }
+
+    private void OpenUpdateDialog()
+    {
+        if (_latestUpdateInfo is null)
+            return;
+
+        UpdateVersionText = _latestUpdateInfo.Tag.TrimStart('v', 'V');
+        UpdateReleaseNotes = string.IsNullOrWhiteSpace(_latestUpdateInfo.Body)
+            ? "暂无更新说明，可点击手动下载查看发布页。"
+            : _latestUpdateInfo.Body;
+        UpdateDownloadStatus = "";
+        UpdateDownloadProgress = 0;
+        UpdateDialogOpen = true;
+    }
+
+    private void OpenUpdatePage()
+    {
+        var url = _latestUpdateInfo?.HtmlUrl ?? LatestReleaseUrl;
+        if (!string.IsNullOrWhiteSpace(url))
+            UpdateService.OpenReleasePage(url);
+    }
+
+    private async Task DownloadUpdateAsync()
+    {
+        var info = _latestUpdateInfo;
+        if (info is null || IsDownloadingUpdate)
+            return;
+
+        IsDownloadingUpdate = true;
+        UpdateDownloadStatus = "正在下载更新…";
+        UpdateDownloadProgress = 0;
+        var progress = new Progress<double>(value =>
+            Dispatcher.UIThread.Post(() => UpdateDownloadProgress = value * 100d));
+        try
+        {
+            var ok = await UpdateService.DownloadAndInstallAsync(info, progress);
+            if (!ok)
+            {
+                UpdateDownloadStatus = "没有找到当前平台的安装包";
+                UpdateStatusText = "没有找到当前平台的安装包";
+                return;
+            }
+
+#if ANDROID
+            UpdateDownloadStatus = "安装包已准备，请在系统界面确认安装";
+            UpdateDialogOpen = false;
+            UpdateStatusText = UpdateDownloadStatus;
+#else
+            UpdateDownloadStatus = "下载完成，正在安装并重启…";
+            UpdateStatusText = UpdateDownloadStatus;
+#endif
+        }
+        catch (Exception ex)
+        {
+            UpdateDownloadStatus = $"更新失败：{ex.Message}";
+            UpdateStatusText = $"更新失败：{ex.Message}";
+        }
+        finally
+        {
+            IsDownloadingUpdate = false;
         }
     }
 }
