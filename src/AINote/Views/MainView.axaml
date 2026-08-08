@@ -205,7 +205,9 @@
             <Setter Property="BorderThickness" Value="0" />
             <Setter Property="CornerRadius" Value="8" />
             <Setter Property="Foreground" Value="#606266" />
-            <Setter Property="Padding" Value="12,8" />
+            <Setter Property="MinHeight" Value="46" />
+            <Setter Property="FontSize" Value="15" />
+            <Setter Property="Padding" Value="14,10" />
             <Setter Property="HorizontalAlignment" Value="Stretch" />
             <Setter Property="HorizontalContentAlignment" Value="Stretch" />
         </Style>
@@ -279,13 +281,13 @@
                     </Grid>
                     <TextBlock Grid.Row="1" Text="{Binding CurrentViewTitle}" Classes="sidebar-header" Margin="4,0,0,4" />
                     <ScrollViewer Grid.Row="2">
-                        <StackPanel Spacing="18">
+                        <StackPanel Spacing="22" Margin="0,0,0,18">
                             <StackPanel Spacing="4">
                                 <TextBlock Text="智能清单" Classes="sidebar-header" />
                                 <ItemsControl ItemsSource="{Binding SmartSidebarItems}">
                                     <ItemsControl.ItemsPanel>
                                         <ItemsPanelTemplate>
-                                            <StackPanel Spacing="2" />
+                                            <StackPanel Spacing="4" />
                                         </ItemsPanelTemplate>
                                     </ItemsControl.ItemsPanel>
                                     <ItemsControl.ItemTemplate>
@@ -307,7 +309,7 @@
                                 <ItemsControl ItemsSource="{Binding CategorySidebarItems}">
                                     <ItemsControl.ItemsPanel>
                                         <ItemsPanelTemplate>
-                                            <StackPanel Spacing="2" />
+                                            <StackPanel Spacing="4" />
                                         </ItemsPanelTemplate>
                                     </ItemsControl.ItemsPanel>
                                     <ItemsControl.ItemTemplate>
@@ -329,7 +331,7 @@
                                 <ItemsControl ItemsSource="{Binding TagSidebarItems}">
                                     <ItemsControl.ItemsPanel>
                                         <ItemsPanelTemplate>
-                                            <StackPanel Spacing="2" />
+                                            <StackPanel Spacing="4" />
                                         </ItemsPanelTemplate>
                                     </ItemsControl.ItemsPanel>
                                     <ItemsControl.ItemTemplate>
@@ -347,7 +349,7 @@
                             </StackPanel>
                         </StackPanel>
                     </ScrollViewer>
-                    <TextBlock Grid.Row="3" Text="{Binding CurrentViewCountText}" Classes="hint" Margin="4,10,0,0" />
+                    <TextBlock Grid.Row="3" Text="{Binding CurrentViewCountText}" Classes="hint" Margin="4,14,0,8" />
                 </Grid>
             </Border>
 
@@ -478,8 +480,8 @@
         </Grid>
 
         <!-- 右下角快速新建 -->
-        <Border Grid.Row="1" Classes="fab-shell" HorizontalAlignment="Right" VerticalAlignment="Bottom"
-                Margin="0,0,30,26" IsVisible="{Binding IsAddNoteClosed}">
+        <Border x:Name="FabPanel" Grid.Row="1" Classes="fab-shell" HorizontalAlignment="Right" VerticalAlignment="Bottom"
+                Margin="0,0,30,26">
             <Button Content="＋" Classes="fab-btn" Command="{Binding OpenAddNoteCommand}" />
         </Border>
 

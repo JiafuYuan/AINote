@@ -2,6 +2,7 @@ using System.ComponentModel;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
+using Avalonia.Layout;
 using AINote.ViewModels;
 
 namespace AINote.Views;
@@ -42,7 +43,8 @@ public partial class MainView : UserControl
     {
         if (e.PropertyName is nameof(MainWindowViewModel.IsNarrow)
             or nameof(MainWindowViewModel.SidebarOpen)
-            or nameof(MainWindowViewModel.SelectedNote))
+            or nameof(MainWindowViewModel.SelectedNote)
+            or nameof(MainWindowViewModel.IsAddNoteClosed))
         {
             ApplyLayout();
         }
@@ -87,6 +89,30 @@ public partial class MainView : UserControl
 
         ToggleClass(AddDialog, "wide", !_vm.IsNarrow);
         ToggleClass(AddNoteEditor, "wide", !_vm.IsNarrow);
+        ApplyAddDialogLayout();
+        FabPanel.IsVisible = _vm.IsAddNoteClosed && (!_vm.IsNarrow || !_vm.SidebarOpen);
+    }
+
+    private void ApplyAddDialogLayout()
+    {
+        if (_vm!.IsNarrow)
+        {
+            AddDialog.HorizontalAlignment = HorizontalAlignment.Stretch;
+            AddDialog.VerticalAlignment = VerticalAlignment.Bottom;
+            AddDialog.Margin = new Thickness(0);
+            AddDialog.MaxWidth = double.PositiveInfinity;
+            AddDialog.CornerRadius = new CornerRadius(24, 24, 0, 0);
+            AddDialog.Padding = new Thickness(20, 22, 20, 26);
+        }
+        else
+        {
+            AddDialog.HorizontalAlignment = HorizontalAlignment.Center;
+            AddDialog.VerticalAlignment = VerticalAlignment.Center;
+            AddDialog.Margin = new Thickness(20, 24);
+            AddDialog.MaxWidth = 760;
+            AddDialog.CornerRadius = new CornerRadius(20);
+            AddDialog.Padding = new Thickness(26);
+        }
     }
 
     private static void ToggleClass(StyledElement element, string className, bool enabled)
