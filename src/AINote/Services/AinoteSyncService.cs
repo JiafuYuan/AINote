@@ -117,26 +117,35 @@ public sealed class AinoteSyncService
             throw new InvalidOperationException(GetErrorText(errorResult, (int)response.StatusCode));
         }
 
+        // 尝试解析包装格式 { "succeeded": true, "data": {...} }
         try
         {
             var result = JsonSerializer.Deserialize<ApiResult<T>>(text, JsonOptions);
-            if (result is null || !result.Succeeded)
+            if (result is not null && result.Succeeded && result.Data is not null)
             {
-                throw new InvalidOperationException(GetErrorText(errorResult, (int)response.StatusCode));
+                return result.Data;
             }
-
-            if (result.Data is null)
-            {
-                if (typeof(T) == typeof(object)) return default;
-                throw new InvalidOperationException("后台返回的数据为空");
-            }
-
-            return result.Data;
         }
         catch (JsonException)
         {
-            throw new InvalidOperationException("后台返回的数据格式不正确");
+            // Not a valid ApiResult wrapper, fall through to raw format.
         }
+
+        // 尝试解析原始格式，后端可能直接返回数据对象
+        try
+        {
+            var raw = JsonSerializer.Deserialize<T>(text, JsonOptions);
+            if (raw is not null)
+            {
+                return raw;
+            }
+        }
+        catch (JsonException)
+        {
+            // Not a valid T either.
+        }
+
+        throw new InvalidOperationException("后台返回的数据格式不正确");
     }
 
     private static string GetErrorText(ApiResult<object>? result, int statusCode)

@@ -78,6 +78,7 @@ $zipName = "AINote-v$Version-win-x64.zip"
 $zipPath = Join-Path $PublishRoot $zipName
 if (Test-Path $zipPath) { Remove-Item -Force $zipPath }
 Compress-Archive -Path (Join-Path $winDir "AINote.exe") -DestinationPath $zipPath
+Remove-Item -LiteralPath $winDir -Recurse -Force
 Write-Host "ZIP: $zipPath" -ForegroundColor Green
 
 # ── Android APK ──────────────────────────────────────────────
@@ -102,6 +103,7 @@ if (-not $SkipAndroid) {
     if ($apkFile) {
         $finalApk = Join-Path $PublishRoot "AINote-Android-$Version.apk"
         Copy-Item $apkFile.FullName $finalApk -Force
+        Remove-Item -LiteralPath $androidDir -Recurse -Force
         Write-Host "APK: $finalApk" -ForegroundColor Green
     } else {
         Write-Host "警告: 未找到 APK 文件" -ForegroundColor Yellow
@@ -135,3 +137,4 @@ if ($apkFile -and (Test-Path $finalApk)) {
 }
 Write-Host "`n后续操作:"
 Write-Host "  git add -A && git commit -m `"v$Version`" && git push" -ForegroundColor Gray
+

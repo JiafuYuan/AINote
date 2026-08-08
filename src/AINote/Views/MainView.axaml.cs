@@ -60,6 +60,9 @@ public partial class MainView : UserControl
             Grid.SetColumn(DetailPanel, 0);
             Grid.SetColumnSpan(DetailPanel, 3);
             DetailPanel.ZIndex = 20;
+            Grid.SetColumn(MainListPanel, 0);
+            Grid.SetColumnSpan(MainListPanel, 3);
+            MainListPanel.ZIndex = 5;
 
             SidebarPanel.IsVisible = _vm.SidebarOpen;
             DetailPanel.IsVisible = _vm.SelectedNote is not null;
@@ -73,6 +76,9 @@ public partial class MainView : UserControl
             Grid.SetColumn(DetailPanel, 2);
             Grid.SetColumnSpan(DetailPanel, 1);
             DetailPanel.ZIndex = 0;
+            Grid.SetColumn(MainListPanel, 1);
+            Grid.SetColumnSpan(MainListPanel, 1);
+            MainListPanel.ZIndex = 0;
 
             SidebarPanel.IsVisible = true;
             DetailPanel.IsVisible = true;

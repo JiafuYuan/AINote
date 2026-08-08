@@ -863,7 +863,20 @@ public sealed class MainWindowViewModel : ObservableObject
         {
             if (!SyncEnabled)
             {
-                AiTestResult = "请先启用云同步并填写后台地址";
+                AiTestResult = "请先启用云同步";
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(SyncBaseUrl))
+            {
+                AiTestResult = "请填写后台地址";
+                return;
+            }
+
+            if (!Uri.TryCreate(SyncBaseUrl.Trim(), UriKind.Absolute, out var uri) ||
+                (uri.Scheme != Uri.UriSchemeHttp && uri.Scheme != Uri.UriSchemeHttps))
+            {
+                AiTestResult = "后台地址格式无效";
                 return;
             }
 
@@ -874,6 +887,22 @@ public sealed class MainWindowViewModel : ObservableObject
             AiTestResult = result.UsedLocalFallback
                 ? "后台已连通，当前使用服务器本地规则"
                 : $"后台 AI 已连通，分类：{result.Category}";
+        }
+        catch (InvalidOperationException ex)
+        {
+            var msg = ex.Message;
+            if (msg.Contains("数据格式不正确", StringComparison.Ordinal))
+                AiTestResult = "连接失败：后台返回的数据格式不正确，请确认后台服务版本";
+            else if (msg.Contains("连接被拒绝", StringComparison.Ordinal) || msg.Contains("refused", StringComparison.OrdinalIgnoreCase))
+                AiTestResult = "连接失败：无法连接到后台，请检查地址和端口";
+            else if (msg.Contains("超时", StringComparison.Ordinal) || msg.Contains("timed out", StringComparison.OrdinalIgnoreCase))
+                AiTestResult = "连接失败：请求超时，后台响应过慢";
+            else
+                AiTestResult = $"连接失败：{msg}";
+        }
+        catch (HttpRequestException ex)
+        {
+            AiTestResult = $"连接失败：网络异常 — {ex.Message}";
         }
         catch (Exception ex)
         {

@@ -532,21 +532,21 @@
                                         <ToggleSwitch Grid.Column="1" IsChecked="{Binding SyncEnabled}" VerticalAlignment="Center" />
                                     </Grid>
                                     <TextBlock Text="后台地址" Classes="field-label" />
-                                    <TextBox Text="{Binding SyncBaseUrl}" PlaceholderText="http://localhost:19001" />
+                                    <TextBox Text="{Binding SyncBaseUrl}" IsReadOnly="True" Background="#f5f7fa" />
                                     <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10">
                                         <Button Content="立即同步" Command="{Binding SyncNowCommand}" Classes="primary-btn"
                                                 IsEnabled="{Binding !IsSyncing}" HorizontalAlignment="Left" />
                                         <TextBlock Grid.Column="1" Text="{Binding SyncStatusText}" Classes="hint"
                                                    VerticalAlignment="Center" />
                                     </Grid>
+                                    <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10">
+                                        <Button Content="测试后台连接" Command="{Binding TestAiCommand}" Classes="ghost-btn"
+                                                IsEnabled="{Binding !IsTestingAi}" HorizontalAlignment="Left" />
+                                        <TextBlock Grid.Column="1" Text="{Binding AiTestResult}" Classes="hint"
+                                                   VerticalAlignment="Center" TextWrapping="Wrap" />
+                                    </Grid>
                                 </StackPanel>
                             </Border>
-
-                            <Button Content="测试后台连接" Command="{Binding TestAiCommand}" Classes="primary-btn"
-                                    IsEnabled="{Binding !IsTestingAi}" HorizontalAlignment="Left" />
-                            <TextBlock Text="{Binding AiTestResult}" Classes="hint" />
-                            <Button Content="关闭" Command="{Binding CloseSettingsCommand}" Classes="ghost-btn"
-                                    HorizontalAlignment="Left" />
                         </StackPanel>
                     </ScrollViewer>
                 </Grid>
