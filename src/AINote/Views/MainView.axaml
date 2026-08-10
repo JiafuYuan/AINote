@@ -534,7 +534,10 @@
                                         <ToggleSwitch Grid.Column="1" IsChecked="{Binding SyncEnabled}" VerticalAlignment="Center" />
                                     </Grid>
                                     <TextBlock Text="后台地址" Classes="field-label" />
-                                    <TextBox Text="{Binding SyncBaseUrl}" IsReadOnly="True" Background="#f5f7fa" />
+                                    <TextBox Text="{Binding SyncBaseUrl}"
+                                             TextInputOptions.ContentType="Url"
+                                             TextInputOptions.ReturnKeyType="Done"
+                                             PlaceholderText="例如：http://192.168.1.100:19001" />
                                     <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10">
                                         <Button Content="立即同步" Command="{Binding SyncNowCommand}" Classes="primary-btn"
                                                 IsEnabled="{Binding !IsSyncing}" HorizontalAlignment="Left" />
